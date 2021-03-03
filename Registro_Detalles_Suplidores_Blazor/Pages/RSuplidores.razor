@@ -1,0 +1,121 @@
+﻿@page "/Suplidores"
+
+@page "/Suplidores/{SuplidorId:int}"
+
+@inject IToastService toast
+
+
+<div class="shadow-lg p-3 mb-5 bg-white rounded">
+
+    <EditForm Model="suplidores" OnValidSubmit="Guardar">
+        <DataAnnotationsValidator />
+        <div class="card">
+            <div class="card-header">
+                <h3>Registro Suplidores</h3>
+            </div>
+
+            <div class="card-body">
+                <form>
+                    <div class="form-row align-items-center">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Suplidor Id</label>
+                                <div class="input-group">
+                                    <InputNumber @bind-Value="this.SuplidorId" class="form-control" />
+                                    <div class="input-group-append">
+                                        <button type="button" style="z-index:0" class="btn btn-secondary input-group-text" @onclick="Buscar">Buscar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombres</label>
+                        <InputText @bind-Value="suplidores.Nombres" class="form-control" />
+                        <ValidationMessage For="(() => suplidores.Nombres)" />
+                    </div>
+                </form>
+
+            </div>
+            <div class="card-footer">
+                <div class="form-group text-center">
+                    <button type="button" class="btn btn-primary" @onclick="Nuevo">Nuevo</button>
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-danger" @onclick="Eliminar">Eliminar</button>
+                </div>
+            </div>
+
+        </div>
+    </EditForm>
+
+</div>
+
+@code{
+
+    [Inject]
+    private SuplidoresBLL suplidoresBLL { get; set; }
+
+    [Parameter]
+    public int SuplidorId { get; set; }
+
+    private Suplidores suplidores = new Suplidores();
+    protected override void OnInitialized()
+    {
+        Limpiar();
+    }
+
+    public async void Buscar()
+    {
+
+        var registro = await suplidoresBLL.Buscar(this.SuplidorId);
+
+        if (registro != null)
+        {
+            this.suplidores = registro;
+        }
+        else
+        {
+
+            toast.ShowInfo("Registro no encontrado.");
+        }
+    }
+
+    private void Nuevo()
+    {
+        Limpiar();
+    }
+
+    private async void Guardar()
+    {
+        suplidores.SuplidorId = this.SuplidorId;
+        if (await suplidoresBLL.Guardar(suplidores))
+        {
+            toast.ShowSuccess("Guardado");
+            Limpiar();
+        }
+        else
+        {
+            toast.ShowError("No se pudo guardar el registro.");
+        }
+    }
+
+    private async void Eliminar()
+    {
+        if (await suplidoresBLL.Eliminar(this.SuplidorId))
+        {
+            toast.ShowSuccess("Eliminado");
+            Limpiar();
+        }
+        else
+        {
+            toast.ShowError("No se pudo eliminar el registro.");
+        }
+    }
+
+    private void Limpiar()
+    {
+        this.suplidores = new Suplidores();
+        this.SuplidorId = 0;
+    }
+
+}
