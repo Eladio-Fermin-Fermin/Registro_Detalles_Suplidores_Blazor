@@ -2,7 +2,7 @@
 
 @page "/Ordenes/{OrdenId:int}"
 
-@inject IToastService toas
+@inject IToastService toast
 
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
 
@@ -56,7 +56,7 @@
                 <div class="row">
                     <div class="col form-group">
                         <label>Producto</label>
-                        <InputSelect @bind-Value="detalle.ProductoId" class="form-control" @onclick="GetProducto">
+                        <InputSelect @bind-Value="detalles.ProductoId" class="form-control" @onclick="GetProducto">
                             @foreach (var producto in listProductos)
                             {
                                 <option value="@producto.ProductoId">@producto.Descripcion</option>
@@ -148,7 +148,7 @@
 
     private Ordenes Orden = new Ordenes();
 
-    private OrdenesDetalles detalle = new OrdenesDetalles();
+    private OrdenesDetalles detalles = new OrdenesDetalles();
 
     private Productos producto = new Productos();
 
@@ -172,7 +172,7 @@
         if (registro != null)
         {
             this.Orden = registro;
-            SourceDTO(registro.Detalles);
+            
         }
         else
         {
@@ -185,13 +185,13 @@
     {
         cantidad = 0;
         Orden.Monto += total;
-        detalle.Costo = producto.Costo;
-        Orden.Detalle.Add(detalle);
+        detalles.Costo = producto.Costo;
+        Orden.Detalle.Add(detalles);
 
         SourceDTO(detalles, producto);
 
         total = 0;
-        detalle = new OrdenesDetalles();
+        detalles = new OrdenesDetalles();
         producto = new Productos();
 
     }
@@ -247,17 +247,17 @@
 
     private async void GetProducto()
     {
-        if (detalle.ProductoId != 0)
+        if (detalles.ProductoId != 0)
         {
-            producto = await productosBLL.Buscar(detalle.ProductoId);
+            producto = await productosBLL.Buscar(detalles.ProductoId);
         }
 
     }
 
     private void CalcularChanged(ChangeEventArgs args)
     {
-        detalle.Cantidad = int.Parse(args.Value.ToString());
-        total = producto.Costo * detalle.Cantidad;
+        detalles.Cantidad = int.Parse(args.Value.ToString());
+        total = producto.Costo * detalles.Cantidad;
     }
 
 

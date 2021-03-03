@@ -26,3 +26,4 @@ namespace Registro_Detalles_Suplidores_Blazor
                 });
     }
 }
+
